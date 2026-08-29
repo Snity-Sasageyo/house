@@ -2,9 +2,10 @@ let p = "";
 let inv = [];
 let clicks = 0;
 let ended = { main: false, bad: false, secret: false };
+let cur = "h";
 
 const rooms = {
-  hall: {
+  h: {
     n: "Entrance Hall",
     i: [
       {
@@ -28,7 +29,7 @@ const rooms = {
       { k: "paper", l: "Dated Oct 8, 1987 — FAMILY OF FOUR STILL MISSING" },
     ],
   },
-  kitchen: {
+  k: {
     n: "Kitchen",
     i: [
       {
@@ -50,7 +51,7 @@ const rooms = {
       },
     ],
   },
-  bedroom: {
+  m: {
     n: "Master Bedroom",
     i: [
       { k: "bed", l: "One side still sunk, as if someone just stood up." },
@@ -72,7 +73,7 @@ const rooms = {
       { k: "box", l: "Plays a few notes, then winds down like a sigh." },
     ],
   },
-  attic: {
+  t: {
     n: "Attic",
     i: [
       {
@@ -97,7 +98,7 @@ const rooms = {
       { k: "tv", l: "Static. For one frame, the static forms a face." },
     ],
   },
-  basement: {
+  s: {
     n: "Basement",
     i: [
       {
@@ -120,15 +121,99 @@ const endings = {
   },
 };
 
+function go(id) {
+  let all = document.querySelectorAll(".rm");
+  for (let i = 0; i < all.length; i++) {
+    all[i].classList.remove("on");
+  }
+  let el = document.getElementById(id);
+  if (el) el.classList.add("on");
+  cur = id;
+  hud();
+}
+
+function hud() {
+  let u = document.getElementById("u");
+  let nm = rooms[cur] ? rooms[cur].n : "Unknown";
+  let items = "";
+  for (let j = 0; j < inv.length; j++) {
+    items += inv[j].e + " ";
+  }
+  u.innerHTML = "<span>" + nm + "</span><span>" + items + "</span>";
+}
+
+function build() {
+  for (let r in rooms) {
+    let el = document.getElementById(r);
+    if (!el) continue;
+    el.className = "rm";
+    let html = "";
+    let list = rooms[r].i;
+    for (let x = 0; x < list.length; x++) {
+      html +=
+        '<div class="ob" data-k="' + list[x].k + '">' + list[x].k + "</div>";
+    }
+    if (r !== "h" && r !== "s") {
+      html += '<div class="lk" data-go="h">return to hall</div>';
+    }
+    el.innerHTML = html;
+
+    let obs = el.querySelectorAll(".ob");
+    for (let y = 0; y < obs.length; y++) {
+      obs[y].onclick = function () {
+        open(this.dataset.k);
+      };
+    }
+    let lk = el.querySelector(".lk");
+    if (lk)
+      lk.onclick = function () {
+        go("h");
+      };
+  }
+}
+
+function open(k) {
+  let o = document.getElementById("o");
+  let txt = "You look at the " + k + ".";
+  for (let r in rooms) {
+    let list = rooms[r].i;
+    for (let z = 0; z < list.length; z++) {
+      if (list[z].k === k) {
+        txt = list[z].l;
+        if (list[z].e) {
+          let got = false;
+          for (let w = 0; w < inv.length; w++) {
+            if (inv[w].k === k) got = true;
+          }
+          if (!got) {
+            inv.push(list[z]);
+            txt += '<br><br><em style="color:#d9a441">You take it.</em>';
+          }
+        }
+        break;
+      }
+    }
+  }
+  o.innerHTML =
+    '<div class="obx"><p>' + txt + '</p><p class="cls">close</p></div>';
+  o.classList.add("on");
+  let c = o.querySelector(".cls");
+  c.onclick = function () {
+    o.classList.remove("on");
+    hud();
+  };
+}
+
 function init() {
   let btn = document.getElementById("b");
-  btn.onclick = () => {
+  btn.onclick = function () {
     let nm = document.querySelector(".n").value || "stranger";
     p = nm;
     document.querySelector(".w").style.display = "none";
     document.getElementById("r").style.display = "block";
+    build();
+    go("h");
   };
 }
 
 init();
-

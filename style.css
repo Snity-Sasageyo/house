@@ -91,3 +91,117 @@ body {
   top: 0;
   left: 0;
 }
+
+.u {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  z-index: 10;
+  pointer-events: none;
+  font-family: "IM Fell English", serif;
+  color: #d9a441;
+}
+
+.u span {
+  pointer-events: auto;
+  text-shadow: 0 0 10px rgba(217, 164, 65, 0.4);
+}
+
+.rm {
+  display: none;
+  width: 100%;
+  height: 100%;
+  padding: 5rem 2rem 2rem;
+  position: relative;
+  overflow-y: auto;
+}
+
+.rm.on {
+  display: block;
+}
+
+.ob {
+  cursor: pointer;
+  padding: 0.8rem;
+  border-bottom: 1px dashed rgba(217, 164, 65, 0.2);
+  margin: 0.5rem 0;
+  transition: all 0.2s;
+  font-size: 1.2rem;
+  text-transform: capitalize;
+}
+
+.ob:hover {
+  color: #d9a441;
+  border-color: #d9a441;
+  text-shadow: 0 0 5px rgba(217, 164, 65, 0.5);
+  padding-left: 1.5rem;
+}
+
+.lk {
+  position: absolute;
+  bottom: 2rem;
+  right: 2rem;
+  color: #8a0f0f;
+  cursor: pointer;
+  font-size: 1.1rem;
+  border: 1px solid #8a0f0f;
+  padding: 0.5rem 1rem;
+}
+
+.lk:hover {
+  background: #8a0f0f;
+  color: #d8d3c5;
+}
+
+.o {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(10, 10, 10, 0.95);
+  z-index: 50;
+  align-items: center;
+  justify-content: center;
+}
+
+.o.on {
+  display: flex;
+}
+
+.obx {
+  max-width: 450px;
+  padding: 2.5rem;
+  border: 1px solid #d9a441;
+  background: #0a0a0a;
+  position: relative;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+}
+
+.obx p {
+  font-family: "IM Fell English", serif;
+  font-size: 1.2rem;
+  line-height: 1.7;
+  margin-bottom: 1.5rem;
+  color: #d8d3c5;
+}
+
+.cls {
+  color: #8a0f0f;
+  cursor: pointer;
+  text-align: right;
+  font-family: "Special Elite", monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.cls:hover {
+  color: #d8d3c5;
+}
+
+
