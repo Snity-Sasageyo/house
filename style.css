@@ -12,6 +12,45 @@ body {
   overflow: hidden;
 }
 
+.gr {
+  position: fixed;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background-image: url('data:image/svg+xml,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="n"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23n)" opacity="0.05"/%3E%3C/svg%3E');
+  pointer-events: none;
+  z-index: 99;
+  animation: grn 0.4s steps(2) infinite;
+}
+
+.v {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(
+    circle,
+    transparent 45%,
+    rgba(0, 0, 0, 0.85) 100%
+  );
+  pointer-events: none;
+  z-index: 98;
+}
+
+@keyframes grn {
+  0% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(-3px, 2px);
+  }
+  100% {
+    transform: translate(2px, -3px);
+  }
+}
+
 .g {
   width: 100vw;
   height: 100vh;
@@ -25,6 +64,7 @@ body {
   text-align: center;
   padding: 2rem;
   max-width: 500px;
+  z-index: 5;
 }
 
 .t {
@@ -34,6 +74,24 @@ body {
   margin-bottom: 1.5rem;
   letter-spacing: 0.15em;
   text-shadow: 0 0 20px rgba(217, 164, 65, 0.3);
+  animation: flk 5s infinite;
+}
+
+@keyframes flk {
+  0%,
+  96%,
+  100% {
+    opacity: 1;
+  }
+  97% {
+    opacity: 0.4;
+  }
+  98% {
+    opacity: 0.8;
+  }
+  99% {
+    opacity: 0.2;
+  }
 }
 
 .s {
@@ -97,25 +155,50 @@ body {
   top: 0;
   left: 0;
   width: 100%;
-  padding: 1rem;
+  padding: 1.2rem 2rem;
   display: flex;
   justify-content: space-between;
-  z-index: 10;
+  align-items: center;
+  z-index: 100;
   pointer-events: none;
   font-family: "IM Fell English", serif;
-  color: #d9a441;
+  background: linear-gradient(to bottom, #0a0a0a 0%, transparent 100%);
+  border-bottom: 1px solid rgba(217, 164, 65, 0.1);
 }
 
-.u span {
+.rn {
+  color: #d9a441;
+  font-size: 1.4rem;
+  letter-spacing: 0.12em;
+  text-shadow: 0 0 10px rgba(217, 164, 65, 0.3);
+  animation: flk 6s infinite alternate;
+}
+
+.sls {
+  display: flex;
+  gap: 0.8rem;
   pointer-events: auto;
-  text-shadow: 0 0 10px rgba(217, 164, 65, 0.4);
+}
+
+.sl {
+  width: 38px;
+  height: 38px;
+  border: 1px solid #8a0f0f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  color: #8a0f0f;
+  background: rgba(10, 10, 10, 0.85);
+  box-shadow: inset 0 0 6px rgba(138, 15, 15, 0.3);
+  transition: all 0.4s;
 }
 
 .rm {
   display: none;
   width: 100%;
   height: 100%;
-  padding: 5rem 2rem 2rem;
+  padding: 6rem 2rem 2rem;
   position: relative;
   overflow-y: auto;
 }
@@ -132,13 +215,41 @@ body {
   transition: all 0.2s;
   font-size: 1.2rem;
   text-transform: capitalize;
+  position: relative;
+  color: #d8d3c5;
 }
 
 .ob:hover {
   color: #d9a441;
   border-color: #d9a441;
-  text-shadow: 0 0 5px rgba(217, 164, 65, 0.5);
+  text-shadow: 0 0 8px rgba(217, 164, 65, 0.6);
   padding-left: 1.5rem;
+}
+
+.ob:hover::before,
+.ob:hover::after {
+  content: attr(data-k);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0.8rem;
+  background: transparent;
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.ob:hover::before {
+  text-shadow: -2px 0 #8a0f0f;
+  clip-path: inset(0 0 50% 0);
+  transform: translateX(-2px);
+}
+
+.ob:hover::after {
+  text-shadow: 2px 0 #d9a441;
+  clip-path: inset(50% 0 0 0);
+  transform: translateX(2px);
 }
 
 .lk {
@@ -150,11 +261,36 @@ body {
   font-size: 1.1rem;
   border: 1px solid #8a0f0f;
   padding: 0.5rem 1rem;
+  transition: all 0.3s;
 }
 
 .lk:hover {
   background: #8a0f0f;
   color: #d8d3c5;
+  box-shadow: 0 0 12px rgba(138, 15, 15, 0.4);
+}
+
+.lv {
+  display: none;
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  border: 1px solid #8a0f0f;
+  color: #8a0f0f;
+  padding: 0.4rem 1.2rem;
+  cursor: pointer;
+  z-index: 100;
+  font-family: "Special Elite", monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  transition: all 0.3s;
+  background: rgba(10, 10, 10, 0.9);
+}
+
+.lv:hover {
+  background: #8a0f0f;
+  color: #d8d3c5;
+  box-shadow: 0 0 10px rgba(138, 15, 15, 0.5);
 }
 
 .o {
@@ -164,8 +300,8 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(10, 10, 10, 0.95);
-  z-index: 50;
+  background: rgba(10, 10, 10, 0.96);
+  z-index: 150;
   align-items: center;
   justify-content: center;
 }
@@ -180,7 +316,9 @@ body {
   border: 1px solid #d9a441;
   background: #0a0a0a;
   position: relative;
-  box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+  box-shadow:
+    0 0 40px rgba(0, 0, 0, 0.9),
+    inset 0 0 15px rgba(217, 164, 65, 0.05);
 }
 
 .obx p {
@@ -198,10 +336,11 @@ body {
   font-family: "Special Elite", monospace;
   text-transform: uppercase;
   letter-spacing: 0.1em;
+  transition: all 0.2s;
 }
 
 .cls:hover {
   color: #d8d3c5;
+  text-shadow: 0 0 5px rgba(216, 211, 197, 0.5);
 }
-
 

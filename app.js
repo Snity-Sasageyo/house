@@ -133,13 +133,25 @@ function go(id) {
 }
 
 function hud() {
-  let u = document.getElementById("u");
+  let rn = document.getElementById("rn");
+  let sls = document.querySelectorAll(".sl");
   let nm = rooms[cur] ? rooms[cur].n : "Unknown";
-  let items = "";
-  for (let j = 0; j < inv.length; j++) {
-    items += inv[j].e + " ";
+  rn.innerText = nm;
+
+  for (let i = 0; i < 4; i++) {
+    if (inv[i]) {
+      sls[i].innerText = inv[i].e;
+      sls[i].style.borderColor = "#d9a441";
+      sls[i].style.color = "#d9a441";
+      sls[i].style.boxShadow =
+        "0 0 10px rgba(217,164,65,0.4), inset 0 0 4px rgba(217,164,65,0.2)";
+    } else {
+      sls[i].innerText = "?";
+      sls[i].style.borderColor = "#8a0f0f";
+      sls[i].style.color = "#8a0f0f";
+      sls[i].style.boxShadow = "inset 0 0 6px rgba(138,15,15,0.3)";
+    }
   }
-  u.innerHTML = "<span>" + nm + "</span><span>" + items + "</span>";
 }
 
 function build() {
@@ -206,14 +218,29 @@ function open(k) {
 
 function init() {
   let btn = document.getElementById("b");
+  let lv = document.getElementById("lv");
+
   btn.onclick = function () {
     let nm = document.querySelector(".n").value || "stranger";
     p = nm;
     document.querySelector(".w").style.display = "none";
     document.getElementById("r").style.display = "block";
+    lv.style.display = "block";
     build();
     go("h");
+  };
+
+  lv.onclick = function () {
+    lv.innerText = "not yet.";
+    lv.style.color = "#d8d3c5";
+    lv.style.borderColor = "#d8d3c5";
+    setTimeout(function () {
+      lv.innerText = "Leave";
+      lv.style.color = "#8a0f0f";
+      lv.style.borderColor = "#8a0f0f";
+    }, 2500);
   };
 }
 
 init();
+
