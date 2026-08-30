@@ -63,7 +63,7 @@ body {
 .w {
   text-align: center;
   padding: 2rem;
-  max-width: 500px;
+  max-width: 520px;
   z-index: 5;
 }
 
@@ -139,6 +139,14 @@ body {
   background: #d9a441;
   color: #0a0a0a;
   box-shadow: 0 0 15px rgba(217, 164, 65, 0.5);
+}
+
+.ef {
+  margin-top: 1.4rem;
+  color: #8a0f0f;
+  font-size: 0.95rem;
+  letter-spacing: 0.08em;
+  min-height: 1.2rem;
 }
 
 .r {
@@ -217,6 +225,14 @@ body {
   text-transform: capitalize;
   position: relative;
   color: #d8d3c5;
+}
+
+.ob.got {
+  opacity: 0.55;
+}
+
+.ob.got:hover {
+  opacity: 1;
 }
 
 .ob:hover {
@@ -311,7 +327,8 @@ body {
 }
 
 .obx {
-  max-width: 450px;
+  max-width: 480px;
+  width: calc(100% - 2.5rem);
   padding: 2.5rem;
   border: 1px solid #d9a441;
   background: #0a0a0a;
@@ -319,14 +336,60 @@ body {
   box-shadow:
     0 0 40px rgba(0, 0, 0, 0.9),
     inset 0 0 15px rgba(217, 164, 65, 0.05);
+  cursor: pointer;
 }
 
 .obx p {
-  font-family: "IM Fell English", serif;
-  font-size: 1.2rem;
-  line-height: 1.7;
+  font-family: "Special Elite", monospace;
+  font-size: 1.1rem;
+  line-height: 1.8;
   margin-bottom: 1.5rem;
   color: #d8d3c5;
+}
+
+#tx {
+  min-height: 5.2rem;
+  white-space: pre-wrap;
+}
+
+.ty::after {
+  content: "▌";
+  color: #d9a441;
+  margin-left: 0.15rem;
+  animation: cu 0.7s steps(1) infinite;
+}
+
+@keyframes cu {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+.tk {
+  display: none;
+  color: #d9a441;
+  font-style: italic;
+  letter-spacing: 0.04em;
+  opacity: 0;
+  animation: tk 0.45s forwards;
+  margin-top: 0.2rem;
+  margin-bottom: 0;
+}
+
+@keyframes tk {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .cls {
@@ -337,6 +400,7 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.1em;
   transition: all 0.2s;
+  margin-bottom: 0;
 }
 
 .cls:hover {
@@ -344,3 +408,166 @@ body {
   text-shadow: 0 0 5px rgba(216, 211, 197, 0.5);
 }
 
+.bt {
+  font-family: "IM Fell English", serif;
+  font-size: 1.25rem;
+  line-height: 1.7;
+  color: #d8d3c5;
+  max-width: 560px;
+  margin-bottom: 1.8rem;
+}
+
+.srs {
+  display: flex;
+  gap: 1.1rem;
+  flex-wrap: wrap;
+  margin: 2rem 0 1rem;
+}
+
+.se {
+  width: 54px;
+  height: 54px;
+  border: 1px solid #8a0f0f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.55rem;
+  color: #8a0f0f;
+  cursor: pointer;
+  background: rgba(10, 10, 10, 0.85);
+  box-shadow: inset 0 0 8px rgba(138, 15, 15, 0.25);
+  opacity: 0.65;
+  transition: all 0.3s;
+}
+
+.se:hover {
+  transform: translateY(-2px);
+}
+
+.se.rd {
+  border-color: #d9a441;
+  color: #d9a441;
+  opacity: 0.9;
+  box-shadow:
+    0 0 12px rgba(217, 164, 65, 0.22),
+    inset 0 0 6px rgba(217, 164, 65, 0.12);
+  animation: flk 3.5s infinite;
+}
+
+.se.on {
+  border-color: #d9a441;
+  color: #d9a441;
+  opacity: 1;
+  box-shadow:
+    0 0 16px rgba(217, 164, 65, 0.45),
+    inset 0 0 8px rgba(217, 164, 65, 0.18);
+}
+
+.wh {
+  min-height: 1.6rem;
+  color: #8a0f0f;
+  font-style: italic;
+  margin-top: 1.1rem;
+  letter-spacing: 0.03em;
+}
+
+.hd {
+  display: inline-block;
+  margin-top: 2rem;
+  border: 1px solid #d9a441;
+  color: #d9a441;
+  padding: 0.7rem 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  letter-spacing: 0.08em;
+}
+
+.hd:hover {
+  background: #d9a441;
+  color: #0a0a0a;
+  box-shadow: 0 0 16px rgba(217, 164, 65, 0.45);
+}
+
+#z.main {
+  background:
+    radial-gradient(
+      circle at 50% 18%,
+      rgba(217, 164, 65, 0.09),
+      transparent 48%
+    ),
+    #0a0a0a;
+}
+
+#z.bad {
+  background: #000;
+}
+
+#z.secret {
+  background:
+    radial-gradient(
+      circle at 50% 28%,
+      rgba(138, 15, 15, 0.16),
+      transparent 52%
+    ),
+    #0a0a0a;
+}
+
+.end {
+  max-width: 650px;
+  margin: 0 auto;
+  padding-top: 12vh;
+  text-align: center;
+  animation: endin 1.1s ease;
+}
+
+@keyframes endin {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.et {
+  font-family: "Cinzel Decorative", serif;
+  color: #d9a441;
+  font-size: 2.4rem;
+  margin-bottom: 1.6rem;
+  letter-spacing: 0.12em;
+  text-shadow: 0 0 18px rgba(217, 164, 65, 0.25);
+  animation: flk 6s infinite;
+}
+
+.ed {
+  font-family: "IM Fell English", serif;
+  font-size: 1.18rem;
+  line-height: 1.9;
+  color: #d8d3c5;
+}
+
+.ef2 {
+  margin-top: 2.1rem;
+  color: #8a0f0f;
+  letter-spacing: 0.08em;
+}
+
+.agn {
+  margin-top: 2.2rem;
+  display: inline-block;
+  border: 1px solid #8a0f0f;
+  color: #8a0f0f;
+  padding: 0.65rem 1.9rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.agn:hover {
+  background: #8a0f0f;
+  color: #d8d3c5;
+  box-shadow: 0 0 14px rgba(138, 15, 15, 0.45);
+}

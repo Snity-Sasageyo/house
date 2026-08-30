@@ -1,8 +1,13 @@
 let p = "";
 let inv = [];
-let clicks = 0;
+let door = 0;
 let ended = { main: false, bad: false, secret: false };
 let cur = "h";
+let seen = [];
+let put = [];
+let tt = null;
+let full = "";
+let dn = false;
 
 const rooms = {
   h: {
@@ -112,14 +117,156 @@ const rooms = {
 const endings = {
   main: {
     t: "They Never Left",
-    d: "The family is released. The house goes quiet. Dawn light. You leave. Behind you, the house finally sleeps.",
+    d: "The family is released. The house goes quiet. Dawn light. You leave.<br><br>Behind you, the house finally sleeps.",
   },
-  bad: { t: "Kept", d: "The house keeps what enters." },
+  bad: {
+    t: "Kept",
+    d: "The house keeps what enters.",
+  },
   secret: {
     t: "The Fifth",
-    d: "The portrait has changed. It now shows five people. One of them is you.",
+    d: "The portrait has changed. It now shows five people.",
   },
 };
+
+const whs = {
+  portrait: "a breath near your ear: thank you.",
+  fridge: "water drips somewhere below the floor.",
+  pillow: "a woman whispers: don't let him wear it.",
+  trunk: "a child whispers: he is under the floor.",
+};
+
+let sl = ["portrait", "fridge", "pillow", "trunk"];
+
+function gotEnds() {
+  let d = { main: false, bad: false, secret: false };
+  try {
+    let j = localStorage.getItem("h47");
+    if (j) {
+      let x = JSON.parse(j);
+      if (x.main) d.main = true;
+      if (x.bad) d.bad = true;
+      if (x.secret) d.secret = true;
+    }
+  } catch (e) {}
+  return d;
+}
+
+function cnt() {
+  let d = gotEnds();
+  let c = 0;
+  if (d.main) c++;
+  if (d.bad) c++;
+  if (d.secret) c++;
+  return c;
+}
+
+function saveEnd(t) {
+  let d = gotEnds();
+  d[t] = true;
+  ended[t] = true;
+  try {
+    localStorage.setItem("h47", JSON.stringify(d));
+  } catch (e) {}
+}
+
+function has(k) {
+  for (let i = 0; i < inv.length; i++) {
+    if (inv[i].k === k) return true;
+  }
+  return false;
+}
+
+function find(k) {
+  for (let r in rooms) {
+    let list = rooms[r].i;
+    for (let i = 0; i < list.length; i++) {
+      if (list[i].k === k) return list[i];
+    }
+  }
+  return null;
+}
+
+function allSeen() {
+  for (let r in rooms) {
+    let list = rooms[r].i;
+    for (let i = 0; i < list.length; i++) {
+      if (seen.indexOf(list[i].k) === -1) return false;
+    }
+  }
+  return true;
+}
+
+function type(el, s, cb) {
+  if (tt) clearTimeout(tt);
+  full = s;
+  el.textContent = "";
+  dn = false;
+  let i = 0;
+
+  function step() {
+    if (i < s.length) {
+      el.textContent += s[i];
+      let ch = s[i];
+      i++;
+      let wt = 16;
+      if (ch === "." || ch === "—" || ch === "?") wt = 130;
+      if (ch === ",") wt = 70;
+      if (ch === "…") wt = 170;
+      tt = setTimeout(step, wt);
+    } else {
+      tt = null;
+      dn = true;
+      if (cb) cb();
+    }
+  }
+
+  step();
+}
+
+function say(s, cb) {
+  let o = document.getElementById("o");
+  o.innerHTML =
+    '<div class="obx"><p id="tx" class="ty"></p><p class="cls" id="cl">close</p></div>';
+  o.classList.add("on");
+
+  let tx = document.getElementById("tx");
+  let c = document.getElementById("cl");
+  let went = false;
+
+  let fin = function () {
+    if (went) return;
+    went = true;
+    tx.classList.remove("ty");
+  };
+
+  type(tx, s, fin);
+
+  o.onclick = function (ev) {
+    if (!dn && ev.target.id !== "cl") {
+      if (tt) clearTimeout(tt);
+      tt = null;
+      tx.textContent = full;
+      dn = true;
+      fin();
+    } else if (dn && ev.target === o) {
+      o.classList.remove("on");
+      if (cb) cb();
+    }
+  };
+
+  c.onclick = function () {
+    if (!dn) {
+      if (tt) clearTimeout(tt);
+      tt = null;
+      tx.textContent = full;
+      dn = true;
+      fin();
+    }
+    o.classList.remove("on");
+    if (cb) cb();
+  };
+}
 
 function go(id) {
   let all = document.querySelectorAll(".rm");
@@ -129,6 +276,7 @@ function go(id) {
   let el = document.getElementById(id);
   if (el) el.classList.add("on");
   cur = id;
+  if (id === "s") drawS();
   hud();
 }
 
@@ -158,16 +306,33 @@ function build() {
   for (let r in rooms) {
     let el = document.getElementById(r);
     if (!el) continue;
+
+    if (r === "s") {
+      drawS();
+      continue;
+    }
+
     el.className = "rm";
     let html = "";
     let list = rooms[r].i;
+
     for (let x = 0; x < list.length; x++) {
+      let cls = "ob";
+      if (list[x].e && has(list[x].k)) cls += " got";
       html +=
-        '<div class="ob" data-k="' + list[x].k + '">' + list[x].k + "</div>";
+        '<div class="' +
+        cls +
+        '" data-k="' +
+        list[x].k +
+        '">' +
+        list[x].k +
+        "</div>";
     }
-    if (r !== "h" && r !== "s") {
+
+    if (r !== "h") {
       html += '<div class="lk" data-go="h">return to hall</div>';
     }
+
     el.innerHTML = html;
 
     let obs = el.querySelectorAll(".ob");
@@ -176,6 +341,7 @@ function build() {
         open(this.dataset.k);
       };
     }
+
     let lk = el.querySelector(".lk");
     if (lk)
       lk.onclick = function () {
@@ -184,33 +350,226 @@ function build() {
   }
 }
 
+function drawS() {
+  let el = document.getElementById("s");
+  if (!el) return;
+
+  el.className = "rm";
+
+  if (seen.indexOf("seals") === -1) seen.push("seals");
+
+  let html =
+    '<div class="bt">The basement door has four hollow seals shaped like the keepsakes.</div>';
+  html += '<div class="srs">';
+
+  for (let i = 0; i < sl.length; i++) {
+    let it = find(sl[i]);
+    let cls = "se";
+    let ic = "?";
+
+    if (put.indexOf(sl[i]) !== -1) {
+      cls += " on";
+      ic = it ? it.e : "?";
+    } else if (has(sl[i])) {
+      cls += " rd";
+      ic = it ? it.e : "?";
+    }
+
+    html += '<div class="' + cls + '" data-sk="' + sl[i] + '">' + ic + "</div>";
+  }
+
+  html += "</div>";
+  html += '<div class="ob" data-k="seals">seals</div>';
+  html +=
+    '<div class="wh" id="wh">' +
+    (put.length === 4 ? "The four seals are full." : "") +
+    "</div>";
+
+  if (put.length === 4) {
+    html += '<div class="hd" id="hd">the hidden room</div>';
+  }
+
+  html += '<div class="lk" data-go="h">return to hall</div>';
+
+  el.innerHTML = html;
+
+  let ob = el.querySelector('[data-k="seals"]');
+  if (ob)
+    ob.onclick = function () {
+      open("seals");
+    };
+
+  let ses = el.querySelectorAll(".se");
+  for (let j = 0; j < ses.length; j++) {
+    ses[j].onclick = function () {
+      seal(this.dataset.sk);
+    };
+  }
+
+  let lk = el.querySelector(".lk");
+  if (lk)
+    lk.onclick = function () {
+      go("h");
+    };
+
+  if (put.length === 4) {
+    let hd = document.getElementById("hd");
+    if (hd)
+      hd.onclick = function () {
+        finish();
+      };
+  }
+}
+
+function seal(kk) {
+  if (put.indexOf(kk) !== -1) {
+    say("It is already set.", function () {
+      drawS();
+    });
+    return;
+  }
+
+  if (!has(kk)) {
+    say("The hollow seal waits for something else.", function () {
+      drawS();
+    });
+    return;
+  }
+
+  put.push(kk);
+  let w = whs[kk] || "something breathes behind the door.";
+
+  say(w, function () {
+    drawS();
+  });
+}
+
+function finish() {
+  if (allSeen()) end("secret");
+  else end("main");
+}
+
+function end(t) {
+  if (tt) clearTimeout(tt);
+  tt = null;
+
+  document.getElementById("o").classList.remove("on");
+
+  let all = document.querySelectorAll(".rm");
+  for (let i = 0; i < all.length; i++) {
+    all[i].classList.remove("on");
+  }
+
+  let z = document.getElementById("z");
+  z.className = "rm on " + t;
+
+  document.querySelector(".u").style.display = "none";
+  document.getElementById("lv").style.display = "none";
+
+  saveEnd(t);
+
+  let e = endings[t];
+  let d = e.d;
+
+  if (t === "main") {
+    d =
+      "we never left. we hid where he can't look. thank you for bringing back our things.<br><br>" +
+      d;
+  }
+
+  if (t === "secret") {
+    d =
+      "we never left. we hid where he can't look. thank you for bringing back our things.<br><br>";
+    d += "The portrait has changed. It now shows five people.<br><br>";
+    d += "One of them is you.<br><br>";
+    d += "...and " + (p || "stranger") + " makes five.";
+  }
+
+  z.innerHTML =
+    '<div class="end"><h2 class="et">' +
+    e.t +
+    '</h2><p class="ed">' +
+    d +
+    '</p><p class="ef2">Endings found: ' +
+    cnt() +
+    '/3</p><div class="agn" id="agn">again</div></div>';
+
+  document.getElementById("agn").onclick = function () {
+    location.reload();
+  };
+}
+
 function open(k) {
-  let o = document.getElementById("o");
-  let txt = "You look at the " + k + ".";
-  for (let r in rooms) {
-    let list = rooms[r].i;
-    for (let z = 0; z < list.length; z++) {
-      if (list[z].k === k) {
-        txt = list[z].l;
-        if (list[z].e) {
-          let got = false;
-          for (let w = 0; w < inv.length; w++) {
-            if (inv[w].k === k) got = true;
-          }
-          if (!got) {
-            inv.push(list[z]);
-            txt += '<br><br><em style="color:#d9a441">You take it.</em>';
-          }
-        }
-        break;
-      }
+  let f = find(k);
+  if (!f) return;
+
+  if (seen.indexOf(k) === -1) seen.push(k);
+
+  if (k === "door") {
+    door++;
+    if (door >= 3) {
+      end("bad");
+      return;
     }
   }
+
+  let line = f.l;
+  if (k === "door" && door === 2) line = "Locked. The handle is colder now.";
+
+  let o = document.getElementById("o");
   o.innerHTML =
-    '<div class="obx"><p>' + txt + '</p><p class="cls">close</p></div>';
+    '<div class="obx"><p id="tx" class="ty"></p><p id="tk" class="tk"></p><p class="cls" id="cl">close</p></div>';
   o.classList.add("on");
-  let c = o.querySelector(".cls");
+
+  let tx = document.getElementById("tx");
+  let tk = document.getElementById("tk");
+  let c = document.getElementById("cl");
+  let got = has(k);
+  let went = false;
+
+  let fin = function () {
+    if (went) return;
+    went = true;
+    tx.classList.remove("ty");
+
+    if (f.e && !got) {
+      inv.push(f);
+      tk.innerText = "You take it.";
+      tk.style.display = "block";
+
+      let ob = document.querySelector('[data-k="' + k + '"]');
+      if (ob) ob.classList.add("got");
+
+      hud();
+    } else if (f.e && got) {
+      tk.innerText = "You already have it.";
+      tk.style.display = "block";
+    }
+  };
+
+  type(tx, line, fin);
+
+  o.onclick = function (ev) {
+    if (!dn && ev.target.id !== "cl") {
+      if (tt) clearTimeout(tt);
+      tt = null;
+      tx.textContent = full;
+      dn = true;
+      fin();
+    } else if (dn && ev.target === o) {
+      o.classList.remove("on");
+      hud();
+    }
+  };
+
   c.onclick = function () {
+    if (!dn) {
+      if (tt) clearTimeout(tt);
+      tt = null;
+      tx.textContent = full;
+      dn = true;
+      fin();
+    }
     o.classList.remove("on");
     hud();
   };
@@ -219,6 +578,9 @@ function open(k) {
 function init() {
   let btn = document.getElementById("b");
   let lv = document.getElementById("lv");
+  let ef = document.getElementById("ef");
+
+  if (ef) ef.innerText = "endings found: " + cnt() + "/3";
 
   btn.onclick = function () {
     let nm = document.querySelector(".n").value || "stranger";
@@ -243,4 +605,5 @@ function init() {
 }
 
 init();
+
 
