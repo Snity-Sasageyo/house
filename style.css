@@ -39,6 +39,23 @@ body {
   z-index: 98;
 }
 
+.dp {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 97;
+  transition: opacity 0.18s;
+}
+
+.dp.on {
+  opacity: 0.38;
+}
+
 @keyframes grn {
   0% {
     transform: translate(0, 0);
@@ -213,6 +230,83 @@ body {
 
 .rm.on {
   display: block;
+  animation: rmin 0.38s ease;
+}
+
+@keyframes rmin {
+  0% {
+    opacity: 0;
+  }
+  8% {
+    opacity: 0.7;
+  }
+  12% {
+    opacity: 0.15;
+  }
+  22% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+body.gl .rm.on {
+  animation: glch 0.28s steps(2);
+}
+
+body.gl .u {
+  animation: glch 0.28s steps(2);
+}
+
+@keyframes glch {
+  0% {
+    transform: translate(0, 0) skewX(0);
+    filter: none;
+  }
+  25% {
+    transform: translate(-3px, 1px) skewX(2deg);
+    filter: contrast(1.45);
+  }
+  50% {
+    transform: translate(2px, -1px) skewX(-1deg);
+    filter: brightness(1.35);
+  }
+  75% {
+    transform: translate(-1px, 2px) skewX(-2deg);
+    filter: invert(0.08);
+  }
+  100% {
+    transform: translate(0, 0) skewX(0);
+    filter: none;
+  }
+}
+
+body.lag .rm.on {
+  animation: lagfx 0.65s steps(2);
+}
+
+@keyframes lagfx {
+  0% {
+    transform: translateX(0);
+    opacity: 1;
+    filter: none;
+  }
+  35% {
+    transform: translateX(9px);
+    opacity: 0.82;
+    filter: blur(0.4px);
+  }
+  70% {
+    transform: translateX(-6px);
+    opacity: 0.95;
+    filter: blur(0.15px);
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+    filter: none;
+  }
 }
 
 .ob {
@@ -233,6 +327,18 @@ body {
 
 .ob.got:hover {
   opacity: 1;
+}
+
+.ob.shut {
+  color: #8a0f0f;
+  opacity: 0.5;
+  border-bottom-color: rgba(138, 15, 15, 0.35);
+}
+
+.ob.shut:hover {
+  color: #8a0f0f;
+  text-shadow: none;
+  padding-left: 0.8rem;
 }
 
 .ob:hover {
@@ -266,6 +372,34 @@ body {
   text-shadow: 2px 0 #d9a441;
   clip-path: inset(50% 0 0 0);
   transform: translateX(2px);
+}
+
+.drs {
+  margin-top: 2.5rem;
+  padding-top: 1.2rem;
+  border-top: 1px dashed rgba(217, 164, 65, 0.18);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.8rem;
+}
+
+.dr {
+  border: 1px solid rgba(138, 15, 15, 0.55);
+  color: #d8d3c5;
+  padding: 0.85rem;
+  cursor: pointer;
+  transition: all 0.25s;
+  text-transform: lowercase;
+  background: rgba(10, 10, 10, 0.72);
+  letter-spacing: 0.04em;
+}
+
+.dr:hover {
+  color: #d9a441;
+  border-color: #d9a441;
+  padding-left: 1.15rem;
+  text-shadow: 0 0 8px rgba(217, 164, 65, 0.5);
+  box-shadow: 0 0 10px rgba(217, 164, 65, 0.12);
 }
 
 .lk {

@@ -8,6 +8,12 @@ let put = [];
 let tt = null;
 let full = "";
 let dn = false;
+let live = false;
+let ward = 0;
+let mir = 0;
+let pic = 0;
+let rd = null;
+let mt = null;
 
 const rooms = {
   h: {
@@ -197,6 +203,50 @@ function allSeen() {
   return true;
 }
 
+function gl() {
+  document.body.classList.remove("gl");
+  void document.body.offsetWidth;
+  document.body.classList.add("gl");
+  setTimeout(function () {
+    document.body.classList.remove("gl");
+  }, 350);
+}
+
+function dip(hard) {
+  let dp = document.getElementById("dp");
+  if (!dp) return;
+  dp.classList.add("on");
+  setTimeout(
+    function () {
+      dp.classList.remove("on");
+    },
+    hard ? 420 : 180,
+  );
+}
+
+function amb() {
+  if (!live) return;
+  let wt = 12000 + Math.random() * 22000;
+  let dr = inv.length + put.length;
+  if (dr > 2) wt -= 3500;
+  if (dr > 5) wt -= 4500;
+  if (wt < 5500) wt = 5500;
+
+  rd = setTimeout(function () {
+    if (!live) return;
+    let x = Math.random();
+    if (x < 0.5) {
+      dip(Math.random() < 0.35);
+    } else if (x < 0.78) {
+      gl();
+    } else {
+      dip(true);
+      gl();
+    }
+    amb();
+  }, wt);
+}
+
 function type(el, s, cb) {
   if (tt) clearTimeout(tt);
   full = s;
@@ -273,10 +323,17 @@ function go(id) {
   for (let i = 0; i < all.length; i++) {
     all[i].classList.remove("on");
   }
+
   let el = document.getElementById(id);
   if (el) el.classList.add("on");
+
   cur = id;
+
   if (id === "s") drawS();
+
+  if (live && Math.random() < 0.22) gl();
+  if (live && id === "s" && Math.random() < 0.5) dip(false);
+
   hud();
 }
 
@@ -329,6 +386,15 @@ function build() {
         "</div>";
     }
 
+    if (r === "h") {
+      html += '<div class="drs">';
+      html += '<div class="dr" data-go="k">kitchen</div>';
+      html += '<div class="dr" data-go="m">bedroom</div>';
+      html += '<div class="dr" data-go="t">attic</div>';
+      html += '<div class="dr" data-go="s">basement</div>';
+      html += "</div>";
+    }
+
     if (r !== "h") {
       html += '<div class="lk" data-go="h">return to hall</div>';
     }
@@ -339,6 +405,13 @@ function build() {
     for (let y = 0; y < obs.length; y++) {
       obs[y].onclick = function () {
         open(this.dataset.k);
+      };
+    }
+
+    let drs = el.querySelectorAll(".dr");
+    for (let d = 0; d < drs.length; d++) {
+      drs[d].onclick = function () {
+        go(this.dataset.go);
       };
     }
 
@@ -437,6 +510,9 @@ function seal(kk) {
   }
 
   put.push(kk);
+  gl();
+  dip(false);
+
   let w = whs[kk] || "something breathes behind the door.";
 
   say(w, function () {
@@ -450,8 +526,24 @@ function finish() {
 }
 
 function end(t) {
+  live = false;
+
+  if (rd) clearTimeout(rd);
   if (tt) clearTimeout(tt);
+  if (mt) clearTimeout(mt);
+
+  rd = null;
   tt = null;
+  mt = null;
+
+  if (t === "bad") {
+    dip(true);
+    gl();
+  }
+
+  if (t === "secret") {
+    gl();
+  }
 
   document.getElementById("o").classList.remove("on");
 
@@ -513,8 +605,79 @@ function open(k) {
     }
   }
 
+  if (k === "wardrobe") {
+    ward++;
+
+    if (ward === 2) {
+      gl();
+      dip(true);
+
+      let ob = document.querySelector('[data-k="wardrobe"]');
+      if (ob) {
+        ob.innerText = "wardrobe — closed";
+        ob.classList.add("shut");
+      }
+
+      say("It closes itself. From the inside.", function () {
+        hud();
+      });
+      return;
+    }
+
+    if (ward > 2) {
+      say("You are not going back in there.", function () {
+        hud();
+      });
+      return;
+    }
+  }
+
   let line = f.l;
-  if (k === "door" && door === 2) line = "Locked. The handle is colder now.";
+  let wait = 0;
+
+  if (k === "door" && door === 2) {
+    line = "Locked. The handle is colder now.";
+  }
+
+  if (k === "portrait") {
+    pic++;
+
+    if (pic === 2) {
+      line = f.s;
+      gl();
+    }
+
+    if (pic > 2) {
+      line = "The fifth figure is facing you.";
+    }
+  }
+
+  if (k === "mirror") {
+    mir++;
+    wait = 680;
+
+    document.body.classList.remove("lag");
+    void document.body.offsetWidth;
+    document.body.classList.add("lag");
+
+    setTimeout(function () {
+      document.body.classList.remove("lag");
+    }, 3400);
+
+    if (mir === 2) {
+      line =
+        "Your reflection is half a second behind you. Then it smiles when you do not.";
+      gl();
+    }
+
+    if (mir > 2) {
+      line = "Your reflection is watching the door now.";
+    }
+  }
+
+  if (f.a === "watch" || f.a === "tv" || f.a === "close") {
+    if (Math.random() < 0.65) gl();
+  }
 
   let o = document.getElementById("o");
   o.innerHTML =
@@ -526,6 +689,8 @@ function open(k) {
   let c = document.getElementById("cl");
   let got = has(k);
   let went = false;
+
+  full = line;
 
   let fin = function () {
     if (went) return;
@@ -547,12 +712,22 @@ function open(k) {
     }
   };
 
-  type(tx, line, fin);
+  if (mt) clearTimeout(mt);
+  mt = null;
+
+  if (wait) {
+    tx.classList.add("ty");
+    mt = setTimeout(function () {
+      type(tx, line, fin);
+    }, wait);
+  } else {
+    type(tx, line, fin);
+  }
 
   o.onclick = function (ev) {
     if (!dn && ev.target.id !== "cl") {
-      if (tt) clearTimeout(tt);
-      tt = null;
+      if (mt) clearTimeout(mt);
+      mt = null;
       tx.textContent = full;
       dn = true;
       fin();
@@ -564,8 +739,8 @@ function open(k) {
 
   c.onclick = function () {
     if (!dn) {
-      if (tt) clearTimeout(tt);
-      tt = null;
+      if (mt) clearTimeout(mt);
+      mt = null;
       tx.textContent = full;
       dn = true;
       fin();
@@ -590,6 +765,8 @@ function init() {
     lv.style.display = "block";
     build();
     go("h");
+    live = true;
+    amb();
   };
 
   lv.onclick = function () {
@@ -605,5 +782,4 @@ function init() {
 }
 
 init();
-
 
