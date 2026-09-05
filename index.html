@@ -4,6 +4,15 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>The House at 47 Harrow Lane</title>
+    <meta
+      name="description"
+      content="A short haunted house exploration. A family vanished. The police found nothing. You just walked in."
+    />
+    <meta name="theme-color" content="#0a0a0a" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%230a0a0a'/%3E%3Crect x='4' y='7' width='8' height='7' fill='%23d9a441'/%3E%3Cpath d='M2 7 L8 2 L14 7' fill='none' stroke='%23d9a441' stroke-width='1.5'/%3E%3C/svg%3E"
+    />
     <link
       href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=IM+Fell+English&family=Special+Elite&display=swap"
       rel="stylesheet"
@@ -14,6 +23,7 @@
     <div class="gr"></div>
     <div class="v"></div>
     <div class="dp" id="dp"></div>
+    <div class="wp" id="wp"></div>
     <div class="g">
       <div class="w">
         <h1 class="t">47 Harrow Lane</h1>
@@ -21,7 +31,7 @@
           A family of four vanished from this house in 1987. The police found
           nothing. You just walked in — and the door locked behind you.
         </p>
-        <input type="text" class="n" placeholder="your name" />
+        <input type="text" class="n" placeholder="your name" maxlength="18" />
         <button class="b" id="b">enter</button>
         <p class="ef" id="ef"></p>
       </div>
@@ -43,6 +53,7 @@
         <div id="z" class="rm"></div>
       </div>
     </div>
+    <div class="snd" id="snd">sound off</div>
     <div class="lv" id="lv">Leave</div>
     <div class="o" id="o"></div>
     <script src="app.js"></script>

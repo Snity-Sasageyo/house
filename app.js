@@ -12,8 +12,23 @@ let live = false;
 let ward = 0;
 let mir = 0;
 let pic = 0;
+let rad = 0;
 let rd = null;
 let mt = null;
+let wpT = null;
+let ac = null;
+let dg = null;
+let sndOn = false;
+let wds = [
+  "behind",
+  "under",
+  "five",
+  "don't",
+  "he sees",
+  "stay",
+  "basement",
+  "closer",
+];
 
 const rooms = {
   h: {
@@ -144,6 +159,10 @@ const whs = {
 
 let sl = ["portrait", "fridge", "pillow", "trunk"];
 
+function esc(s) {
+  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
 function gotEnds() {
   let d = { main: false, bad: false, secret: false };
   try {
@@ -203,6 +222,113 @@ function allSeen() {
   return true;
 }
 
+function tick() {
+  if (!sndOn || !ac) return;
+  try {
+    let o = ac.createOscillator();
+    let g = ac.createGain();
+    o.type = "square";
+    o.frequency.value = 190;
+    g.gain.value = 0.0001;
+    o.connect(g);
+    g.connect(ac.destination);
+    let t = ac.currentTime;
+    g.gain.exponentialRampToValueAtTime(0.05, t + 0.01);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.11);
+    o.start(t);
+    o.stop(t + 0.12);
+  } catch (e) {}
+}
+
+function thump() {
+  if (!sndOn || !ac) return;
+  try {
+    let o = ac.createOscillator();
+    let g = ac.createGain();
+    o.type = "sine";
+    o.frequency.value = 52;
+    g.gain.value = 0.0001;
+    o.connect(g);
+    g.connect(ac.destination);
+    let t = ac.currentTime;
+    g.gain.exponentialRampToValueAtTime(0.09, t + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.4);
+    o.start(t);
+    o.stop(t + 0.45);
+  } catch (e) {}
+}
+
+function setupSnd() {
+  let btn = document.getElementById("snd");
+  if (!btn) return;
+
+  btn.onclick = function () {
+    if (!ac) {
+      try {
+        ac = new (window.AudioContext || window.webkitAudioContext)();
+
+        let g = ac.createGain();
+        g.gain.value = 0;
+        g.connect(ac.destination);
+
+        let o1 = ac.createOscillator();
+        o1.type = "sine";
+        o1.frequency.value = 46;
+
+        let o2 = ac.createOscillator();
+        o2.type = "sine";
+        o2.frequency.value = 58;
+
+        let o3 = ac.createOscillator();
+        o3.type = "triangle";
+        o3.frequency.value = 94;
+
+        let g3 = ac.createGain();
+        g3.gain.value = 0.08;
+
+        o1.connect(g);
+        o2.connect(g);
+        o3.connect(g3);
+        g3.connect(g);
+
+        o1.start();
+        o2.start();
+        o3.start();
+
+        dg = g;
+      } catch (e) {
+        ac = null;
+      }
+    }
+
+    if (!ac) return;
+
+    try {
+      if (ac.state === "suspended") ac.resume();
+    } catch (e) {}
+
+    if (!sndOn) {
+      try {
+        if (dg) dg.gain.setTargetAtTime(0.035, ac.currentTime, 0.35);
+      } catch (e) {
+        if (dg) dg.gain.value = 0.035;
+      }
+      sndOn = true;
+      btn.innerText = "sound on";
+      btn.classList.add("on");
+    } else {
+      try {
+        if (dg) dg.gain.setTargetAtTime(0.0001, ac.currentTime, 0.12);
+      } catch (e) {
+        if (dg) dg.gain.value = 0;
+      }
+      sndOn = false;
+      btn.innerText = "sound off";
+      btn.classList.remove("on");
+    }
+  };
+}
+
 function gl() {
   document.body.classList.remove("gl");
   void document.body.offsetWidth;
@@ -224,25 +350,45 @@ function dip(hard) {
   );
 }
 
+function whisp() {
+  let wp = document.getElementById("wp");
+  if (!wp) return;
+  if (wpT) clearTimeout(wpT);
+  wp.innerText = wds[Math.floor(Math.random() * wds.length)];
+  wp.classList.add("on");
+  wpT = setTimeout(function () {
+    wp.classList.remove("on");
+    wpT = null;
+  }, 1400);
+}
+
 function amb() {
   if (!live) return;
+
   let wt = 12000 + Math.random() * 22000;
   let dr = inv.length + put.length;
+
   if (dr > 2) wt -= 3500;
   if (dr > 5) wt -= 4500;
   if (wt < 5500) wt = 5500;
 
   rd = setTimeout(function () {
     if (!live) return;
+
     let x = Math.random();
-    if (x < 0.5) {
+
+    if (dr > 3 && x < 0.18) {
+      whisp();
+    } else if (x < 0.5) {
       dip(Math.random() < 0.35);
     } else if (x < 0.78) {
       gl();
     } else {
       dip(true);
       gl();
+      if (dr > 4) whisp();
     }
+
     amb();
   }, wt);
 }
@@ -333,6 +479,7 @@ function go(id) {
 
   if (live && Math.random() < 0.22) gl();
   if (live && id === "s" && Math.random() < 0.5) dip(false);
+  if (live && id === "t" && Math.random() < 0.25) whisp();
 
   hud();
 }
@@ -510,6 +657,7 @@ function seal(kk) {
   }
 
   put.push(kk);
+  tick();
   gl();
   dip(false);
 
@@ -537,11 +685,13 @@ function end(t) {
   mt = null;
 
   if (t === "bad") {
+    thump();
     dip(true);
     gl();
   }
 
   if (t === "secret") {
+    thump();
     gl();
   }
 
@@ -557,6 +707,7 @@ function end(t) {
 
   document.querySelector(".u").style.display = "none";
   document.getElementById("lv").style.display = "none";
+  document.getElementById("snd").style.display = "none";
 
   saveEnd(t);
 
@@ -574,17 +725,21 @@ function end(t) {
       "we never left. we hid where he can't look. thank you for bringing back our things.<br><br>";
     d += "The portrait has changed. It now shows five people.<br><br>";
     d += "One of them is you.<br><br>";
-    d += "...and " + (p || "stranger") + " makes five.";
+    d += "...and " + esc(p || "stranger") + " makes five.";
   }
+
+  let found = cnt();
+  let es =
+    found === 3 ? "the house remembers you" : "Endings found: " + found + "/3";
 
   z.innerHTML =
     '<div class="end"><h2 class="et">' +
     e.t +
     '</h2><p class="ed">' +
     d +
-    '</p><p class="ef2">Endings found: ' +
-    cnt() +
-    '/3</p><div class="agn" id="agn">again</div></div>';
+    '</p><p class="ef2">' +
+    es +
+    '</p><div class="agn" id="agn">again</div></div>';
 
   document.getElementById("agn").onclick = function () {
     location.reload();
@@ -597,11 +752,21 @@ function open(k) {
 
   if (seen.indexOf(k) === -1) seen.push(k);
 
+  let line = f.l;
+  let wait = 0;
+
   if (k === "door") {
     door++;
+
     if (door >= 3) {
+      thump();
       end("bad");
       return;
+    }
+
+    if (door === 2) {
+      line = "Locked. The handle is colder now.";
+      gl();
     }
   }
 
@@ -609,6 +774,7 @@ function open(k) {
     ward++;
 
     if (ward === 2) {
+      thump();
       gl();
       dip(true);
 
@@ -632,15 +798,37 @@ function open(k) {
     }
   }
 
-  let line = f.l;
-  let wait = 0;
+  if (k === "radio") {
+    rad++;
 
-  if (k === "door" && door === 2) {
-    line = "Locked. The handle is colder now.";
+    if (rad === 2) {
+      gl();
+      say("Three notes of a lullaby play backwards.", function () {
+        hud();
+      });
+      return;
+    }
+
+    if (rad > 2) {
+      say("Static only.", function () {
+        hud();
+      });
+      return;
+    }
   }
 
   if (k === "portrait") {
     pic++;
+
+    if (pic === 5 && has(k)) {
+      tick();
+      gl();
+      dip(true);
+      say("It winks.", function () {
+        hud();
+      });
+      return;
+    }
 
     if (pic === 2) {
       line = f.s;
@@ -675,9 +863,31 @@ function open(k) {
     }
   }
 
-  if (f.a === "watch" || f.a === "tv" || f.a === "close") {
-    if (Math.random() < 0.65) gl();
+  if (k === "clock") {
+    tick();
+    dip(false);
   }
+
+  if (k === "drawings") {
+    whisp();
+  }
+
+  if (k === "tv") {
+    gl();
+    dip(true);
+  }
+
+  if (k === "window") {
+    document.body.classList.remove("lag");
+    void document.body.offsetWidth;
+    document.body.classList.add("lag");
+
+    setTimeout(function () {
+      document.body.classList.remove("lag");
+    }, 2600);
+  }
+
+  if (f.a === "watch" && Math.random() < 0.65) gl();
 
   let o = document.getElementById("o");
   o.innerHTML =
@@ -754,17 +964,29 @@ function init() {
   let btn = document.getElementById("b");
   let lv = document.getElementById("lv");
   let ef = document.getElementById("ef");
+  let snd = document.getElementById("snd");
 
-  if (ef) ef.innerText = "endings found: " + cnt() + "/3";
+  if (ef) {
+    let c = cnt();
+    ef.innerText =
+      c === 3 ? "the house remembers you" : "endings found: " + c + "/3";
+  }
+
+  setupSnd();
 
   btn.onclick = function () {
     let nm = document.querySelector(".n").value || "stranger";
     p = nm;
+
     document.querySelector(".w").style.display = "none";
     document.getElementById("r").style.display = "block";
+
     lv.style.display = "block";
+    if (snd) snd.style.display = "block";
+
     build();
     go("h");
+
     live = true;
     amb();
   };
@@ -773,6 +995,7 @@ function init() {
     lv.innerText = "not yet.";
     lv.style.color = "#d8d3c5";
     lv.style.borderColor = "#d8d3c5";
+
     setTimeout(function () {
       lv.innerText = "Leave";
       lv.style.color = "#8a0f0f";
@@ -782,4 +1005,3 @@ function init() {
 }
 
 init();
-

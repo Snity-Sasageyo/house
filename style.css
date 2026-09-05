@@ -4,6 +4,11 @@
   box-sizing: border-box;
 }
 
+::selection {
+  background: #8a0f0f;
+  color: #d8d3c5;
+}
+
 body {
   background: #0a0a0a;
   color: #d8d3c5;
@@ -20,7 +25,7 @@ body {
   height: 200%;
   background-image: url('data:image/svg+xml,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="n"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23n)" opacity="0.05"/%3E%3C/svg%3E');
   pointer-events: none;
-  z-index: 99;
+  z-index: 145;
   animation: grn 0.4s steps(2) infinite;
 }
 
@@ -36,7 +41,7 @@ body {
     rgba(0, 0, 0, 0.85) 100%
   );
   pointer-events: none;
-  z-index: 98;
+  z-index: 144;
 }
 
 .dp {
@@ -48,12 +53,34 @@ body {
   background: #000;
   opacity: 0;
   pointer-events: none;
-  z-index: 97;
+  z-index: 143;
   transition: opacity 0.18s;
 }
 
 .dp.on {
   opacity: 0.38;
+}
+
+.wp {
+  position: fixed;
+  top: 42%;
+  right: 1.2rem;
+  z-index: 146;
+  color: #8a0f0f;
+  font-family: "IM Fell English", serif;
+  font-size: 1.1rem;
+  letter-spacing: 0.16em;
+  opacity: 0;
+  transform: translateX(8px);
+  transition: all 0.5s;
+  pointer-events: none;
+  text-shadow: 0 0 10px rgba(138, 15, 15, 0.35);
+  writing-mode: vertical-rl;
+}
+
+.wp.on {
+  opacity: 0.72;
+  transform: translateX(-4px);
 }
 
 @keyframes grn {
@@ -319,6 +346,9 @@ body.lag .rm.on {
   text-transform: capitalize;
   position: relative;
   color: #d8d3c5;
+  max-width: 720px;
+  min-height: 44px;
+  user-select: none;
 }
 
 .ob.got {
@@ -381,6 +411,7 @@ body.lag .rm.on {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 0.8rem;
+  max-width: 720px;
 }
 
 .dr {
@@ -392,6 +423,8 @@ body.lag .rm.on {
   text-transform: lowercase;
   background: rgba(10, 10, 10, 0.72);
   letter-spacing: 0.04em;
+  min-height: 44px;
+  user-select: none;
 }
 
 .dr:hover {
@@ -412,12 +445,42 @@ body.lag .rm.on {
   border: 1px solid #8a0f0f;
   padding: 0.5rem 1rem;
   transition: all 0.3s;
+  min-height: 44px;
+  user-select: none;
 }
 
 .lk:hover {
   background: #8a0f0f;
   color: #d8d3c5;
   box-shadow: 0 0 12px rgba(138, 15, 15, 0.4);
+}
+
+.snd {
+  display: none;
+  position: fixed;
+  bottom: 1.5rem;
+  left: 1.5rem;
+  border: 1px solid #d9a441;
+  color: #d9a441;
+  padding: 0.4rem 1.2rem;
+  cursor: pointer;
+  z-index: 100;
+  font-family: "Special Elite", monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  transition: all 0.3s;
+  background: rgba(10, 10, 10, 0.9);
+  min-height: 40px;
+  user-select: none;
+}
+
+.snd:hover {
+  box-shadow: 0 0 10px rgba(217, 164, 65, 0.35);
+}
+
+.snd.on {
+  background: #d9a441;
+  color: #0a0a0a;
 }
 
 .lv {
@@ -435,6 +498,8 @@ body.lag .rm.on {
   letter-spacing: 0.1em;
   transition: all 0.3s;
   background: rgba(10, 10, 10, 0.9);
+  min-height: 40px;
+  user-select: none;
 }
 
 .lv:hover {
@@ -471,6 +536,8 @@ body.lag .rm.on {
     0 0 40px rgba(0, 0, 0, 0.9),
     inset 0 0 15px rgba(217, 164, 65, 0.05);
   cursor: pointer;
+  max-height: 82vh;
+  overflow-y: auto;
 }
 
 .obx p {
@@ -535,6 +602,7 @@ body.lag .rm.on {
   letter-spacing: 0.1em;
   transition: all 0.2s;
   margin-bottom: 0;
+  min-height: 44px;
 }
 
 .cls:hover {
@@ -572,6 +640,7 @@ body.lag .rm.on {
   box-shadow: inset 0 0 8px rgba(138, 15, 15, 0.25);
   opacity: 0.65;
   transition: all 0.3s;
+  user-select: none;
 }
 
 .se:hover {
@@ -614,6 +683,8 @@ body.lag .rm.on {
   cursor: pointer;
   transition: all 0.3s;
   letter-spacing: 0.08em;
+  min-height: 44px;
+  user-select: none;
 }
 
 .hd:hover {
@@ -698,6 +769,8 @@ body.lag .rm.on {
   transition: all 0.3s;
   text-transform: uppercase;
   letter-spacing: 0.1em;
+  min-height: 44px;
+  user-select: none;
 }
 
 .agn:hover {
@@ -705,3 +778,80 @@ body.lag .rm.on {
   color: #d8d3c5;
   box-shadow: 0 0 14px rgba(138, 15, 15, 0.45);
 }
+
+@media (max-width: 640px) {
+  .t {
+    font-size: 2.35rem;
+  }
+
+  .s {
+    font-size: 1rem;
+  }
+
+  .u {
+    padding: 0.8rem 1rem;
+    align-items: flex-start;
+    gap: 0.7rem;
+  }
+
+  .rn {
+    font-size: 1.05rem;
+    max-width: 46%;
+  }
+
+  .sl {
+    width: 32px;
+    height: 32px;
+    font-size: 1.1rem;
+  }
+
+  .rm {
+    padding: 5.2rem 1rem 4.5rem;
+  }
+
+  .ob {
+    font-size: 1.05rem;
+    padding: 0.7rem;
+  }
+
+  .ob:hover::before,
+  .ob:hover::after {
+    padding: 0.7rem;
+  }
+
+  .drs {
+    grid-template-columns: 1fr;
+  }
+
+  .obx {
+    padding: 1.6rem;
+  }
+
+  .et {
+    font-size: 1.9rem;
+  }
+
+  .ed {
+    font-size: 1.02rem;
+  }
+
+  .snd,
+  .lv {
+    bottom: 1rem;
+    font-size: 0.8rem;
+    padding: 0.35rem 0.8rem;
+  }
+
+  .snd {
+    left: 1rem;
+  }
+
+  .lv {
+    right: 1rem;
+  }
+
+  .wp {
+    right: 0.6rem;
+  }
+}
+
